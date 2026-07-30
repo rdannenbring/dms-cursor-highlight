@@ -308,4 +308,55 @@ PluginSettings {
             }
         }
     }
+
+    StyledRect {
+        width: parent.width
+        height: referenceColumn.implicitHeight + Theme.spacingL * 2
+        radius: Theme.cornerRadius
+        color: Theme.surface
+
+        Column {
+            id: referenceColumn
+            anchors.fill: parent
+            anchors.margins: Theme.spacingL
+            spacing: Theme.spacingM
+
+            Row {
+                spacing: Theme.spacingM
+
+                DankIcon {
+                    name: "code"
+                    size: Theme.iconSize
+                    color: Theme.primary
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                StyledText {
+                    text: "Reference"
+                    font.pixelSize: Theme.fontSizeMedium
+                    font.weight: Font.Medium
+                    color: Theme.surfaceText
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            StyledText {
+                text: "View this project on <a href=\"https://github.com/ReyArlena/dms-cursor-highlight\" style=\"color: " + Theme.primary + ";\">GitHub</a> for documentation, more information, and contributions."
+                textFormat: Text.RichText
+                linkColor: Theme.primary
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceVariantText
+                wrapMode: Text.WordWrap
+                width: parent.width
+                lineHeight: 1.4
+                onLinkActivated: link => Qt.openUrlExternally(link)
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
+            }
+        }
+    }
 }
