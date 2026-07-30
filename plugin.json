@@ -9,6 +9,7 @@
     "type": "daemon",
     "component": "./CursorHighlight.qml",
     "settings": "./CursorHighlightSettings.qml",
+    "startupCheck": "./StartupCheck.qml",
     "permissions": [
         "settings_read",
         "settings_write"

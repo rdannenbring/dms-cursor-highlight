@@ -11,6 +11,8 @@ cursor is not.
 - Hyprland (cursor position is read from Hyprland's IPC socket)
 - `python3` (see [Why the python3 helper?](#why-the-python3-helper))
 
+A startup check verifies both requirements when the plugin is enabled - if Hyprland or python3 is missing, DMS shows an error toast and the plugin refuses to load.
+
 ## Install
 
 ```bash
