@@ -60,6 +60,7 @@ PluginSettings {
     }
 
     StyledText {
+        width: parent.width
         text: "Cursor Highlight"
         font.pixelSize: Theme.fontSizeLarge
         font.weight: Font.Bold
@@ -67,107 +68,142 @@ PluginSettings {
     }
 
     StyledText {
-        text: "Click-through ring around the cursor for presentations and screen sharing. Toggle with: dms ipc call cursorHighlight toggle"
+        width: parent.width
+        text: "Click-through ring around the cursor for presentations and screen sharing"
         font.pixelSize: Theme.fontSizeSmall
         color: Theme.surfaceVariantText
-        width: parent.width
         wrapMode: Text.WordWrap
     }
 
-    Row {
+    StyledRect {
         width: parent.width
-        spacing: Theme.spacingM
+        height: generalColumn.implicitHeight + Theme.spacingL * 2
+        radius: Theme.cornerRadius
+        color: Theme.surfaceContainerHigh
 
         Column {
-            width: parent.width - ringToggle.width - Theme.spacingM
-            spacing: Theme.spacingXS
-            anchors.verticalCenter: parent.verticalCenter
+            id: generalColumn
+            anchors.fill: parent
+            anchors.margins: Theme.spacingL
+            spacing: Theme.spacingM
 
             StyledText {
-                text: "Show Ring"
-                font.pixelSize: Theme.fontSizeLarge
+                text: "General"
+                font.pixelSize: Theme.fontSizeMedium
                 font.weight: Font.Medium
                 color: Theme.surfaceText
             }
 
-            StyledText {
-                text: "Same as: dms ipc call cursorHighlight toggle"
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.surfaceVariantText
+            Row {
                 width: parent.width
-                wrapMode: Text.WordWrap
-            }
-        }
+                spacing: Theme.spacingM
 
-        DankToggle {
-            id: ringToggle
-            anchors.verticalCenter: parent.verticalCenter
-            checked: root.ringActive
-            onToggled: isChecked => {
-                if (root.daemonInstance)
-                    root.daemonInstance.active = isChecked;
+                Column {
+                    width: parent.width - ringToggle.width - Theme.spacingM
+                    spacing: Theme.spacingXS
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    StyledText {
+                        text: "Show Ring"
+                        font.pixelSize: Theme.fontSizeLarge
+                        font.weight: Font.Medium
+                        color: Theme.surfaceText
+                    }
+
+                    StyledText {
+                        text: "Same as: dms ipc call cursorHighlight toggle"
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.surfaceVariantText
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+
+                DankToggle {
+                    id: ringToggle
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: root.ringActive
+                    onToggled: isChecked => {
+                        if (root.daemonInstance)
+                            root.daemonInstance.active = isChecked;
+                    }
+                }
+            }
+
+            SliderSetting {
+                settingKey: "pollRate"
+                label: "Polling Rate"
+                description: "How often the cursor position is sampled. Higher is smoother, slightly more CPU"
+                defaultValue: 60
+                minimum: 10
+                maximum: 240
+                unit: "Hz"
+                rightIcon: "speed"
             }
         }
     }
 
     StyledRect {
         width: parent.width
-        height: 1
-        color: Theme.outline
-        opacity: 0.3
-    }
+        height: appearanceColumn.implicitHeight + Theme.spacingL * 2
+        radius: Theme.cornerRadius
+        color: Theme.surfaceContainerHigh
 
-    SliderSetting {
-        settingKey: "ringRadius"
-        label: "Ring Radius"
-        description: "Radius of the highlight ring"
-        defaultValue: 28
-        minimum: 8
-        maximum: 100
-        unit: "px"
-        rightIcon: "radio_button_unchecked"
-    }
+        Column {
+            id: appearanceColumn
+            anchors.fill: parent
+            anchors.margins: Theme.spacingL
+            spacing: Theme.spacingM
 
-    SliderSetting {
-        settingKey: "ringThickness"
-        label: "Ring Thickness"
-        description: "Border width of the ring"
-        defaultValue: 4
-        minimum: 1
-        maximum: 20
-        unit: "px"
-        rightIcon: "line_weight"
-    }
+            StyledText {
+                text: "Appearance"
+                font.pixelSize: Theme.fontSizeMedium
+                font.weight: Font.Medium
+                color: Theme.surfaceText
+            }
 
-    SliderSetting {
-        settingKey: "pollRate"
-        label: "Polling Rate"
-        description: "How often the cursor position is sampled. Higher is smoother, slightly more CPU"
-        defaultValue: 60
-        minimum: 10
-        maximum: 240
-        unit: "Hz"
-        rightIcon: "speed"
-    }
+            SliderSetting {
+                settingKey: "ringRadius"
+                label: "Ring Radius"
+                description: "Radius of the highlight ring"
+                defaultValue: 28
+                minimum: 8
+                maximum: 100
+                unit: "px"
+                rightIcon: "radio_button_unchecked"
+            }
 
-    ColorSetting {
-        id: colorSetting
-        settingKey: "ringColor"
-        label: "Ring Color"
-        description: "Defaults to the theme primary color"
-        defaultValue: Theme.primary
-    }
+            SliderSetting {
+                settingKey: "ringThickness"
+                label: "Ring Thickness"
+                description: "Border width of the ring"
+                defaultValue: 4
+                minimum: 1
+                maximum: 20
+                unit: "px"
+                rightIcon: "line_weight"
+            }
 
-    DankButton {
-        text: "Reset Color to Theme Default"
-        iconName: "format_color_reset"
-        onClicked: {
-            // Remove the stored value entirely (instead of saving the current
-            // theme color as a fixed hex) so the ring keeps following the theme
-            colorSetting.isInitialized = false;
-            colorSetting.value = colorSetting.defaultValue;
-            root.saveValue("ringColor", undefined);
-            colorSetting.isInitialized = true;
+            ColorSetting {
+                id: colorSetting
+                settingKey: "ringColor"
+                label: "Ring Color"
+                description: "Defaults to the theme primary color"
+                defaultValue: Theme.primary
+            }
+
+            DankButton {
+                text: "Reset Color to Theme Default"
+                iconName: "format_color_reset"
+                onClicked: {
+                    // Remove the stored value entirely (instead of saving the current
+                    // theme color as a fixed hex) so the ring keeps following the theme
+                    colorSetting.isInitialized = false;
+                    colorSetting.value = colorSetting.defaultValue;
+                    root.saveValue("ringColor", undefined);
+                    colorSetting.isInitialized = true;
+                }
+            }
         }
     }
 
