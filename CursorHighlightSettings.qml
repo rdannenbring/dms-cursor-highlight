@@ -183,8 +183,17 @@ PluginSettings {
                 ]
             }
 
+            StyledText {
+                text: "Settings below are saved separately for each style."
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceVariantText
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+
             SliderSetting {
-                settingKey: "size"
+                settingKey: styleSetting.value + "Size"
+                onSettingKeyChanged: loadValue()
                 label: "Size"
                 description: styleSetting.value === "arrow" ? "Length of the arrow" : "Radius of the highlight"
                 defaultValue: 28
@@ -196,7 +205,7 @@ PluginSettings {
 
             SliderSetting {
                 visible: styleSetting.value === "ring"
-                settingKey: "thickness"
+                settingKey: "ringThickness"
                 label: "Ring Thickness"
                 description: "Border width of the ring"
                 defaultValue: 4
@@ -207,7 +216,8 @@ PluginSettings {
             }
 
             SliderSetting {
-                settingKey: "offsetX"
+                settingKey: styleSetting.value + "OffsetX"
+                onSettingKeyChanged: loadValue()
                 label: "Offset X"
                 description: "Horizontal shift from the cursor position"
                 defaultValue: 0
@@ -218,7 +228,8 @@ PluginSettings {
             }
 
             SliderSetting {
-                settingKey: "offsetY"
+                settingKey: styleSetting.value + "OffsetY"
+                onSettingKeyChanged: loadValue()
                 label: "Offset Y"
                 description: "Vertical shift from the cursor position"
                 defaultValue: 0
@@ -230,7 +241,8 @@ PluginSettings {
 
             ToggleSetting {
                 id: rainbowSetting
-                settingKey: "rainbow"
+                settingKey: styleSetting.value + "Rainbow"
+                onSettingKeyChanged: loadValue()
                 label: "Rainbow Mode"
                 description: "Cycle the hue of the selected colour while visible"
                 defaultValue: false
@@ -238,7 +250,8 @@ PluginSettings {
 
             SliderSetting {
                 visible: rainbowSetting.value
-                settingKey: "rainbowSpeed"
+                settingKey: styleSetting.value + "RainbowSpeed"
+                onSettingKeyChanged: loadValue()
                 label: "Flash Speed"
                 description: "1 is a slow ~10s cycle, 10 is ~1s"
                 defaultValue: 5
@@ -249,7 +262,8 @@ PluginSettings {
 
             ColorSetting {
                 id: colorSetting
-                settingKey: "color"
+                settingKey: styleSetting.value + "Color"
+                onSettingKeyChanged: loadValue()
                 label: "Color"
                 description: "Defaults to the theme primary color"
                 defaultValue: Theme.primary
@@ -263,7 +277,7 @@ PluginSettings {
                     // theme color as a fixed hex) so the highlight keeps following the theme
                     colorSetting.isInitialized = false;
                     colorSetting.value = colorSetting.defaultValue;
-                    root.saveValue("color", undefined);
+                    root.saveValue(styleSetting.value + "Color", undefined);
                     colorSetting.isInitialized = true;
                 }
             }

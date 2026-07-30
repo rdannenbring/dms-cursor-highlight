@@ -76,6 +76,9 @@ DMS Settings → Plugins → Cursor Highlight:
 | Flash Speed | 5 | 1-10 | Rainbow cycle speed; 1 is ~10s per cycle, 10 is ~1s (shown when Rainbow Mode is on) |
 | Color | theme primary | - | Color picker; reset button restores theme-following default |
 
+Size, Ring Thickness, Offset X/Y, Rainbow Mode, Flash Speed, and Color are saved
+separately for each style - switching style switches to that style's own values.
+
 Notes:
 
 - The highlight is click-through (empty input region) and never takes keyboard focus.

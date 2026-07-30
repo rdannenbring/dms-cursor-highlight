@@ -26,15 +26,17 @@ PluginComponent {
         active = !active;
     }
 
+    // Appearance settings are stored per style, prefixed with the style name
+    // (e.g. ringSize, dotColor, arrowRainbow). Thickness is ring-only.
     readonly property string highlightStyle: pluginData.style || "ring"
-    readonly property real highlightSize: pluginData.size || 28
-    readonly property real highlightThickness: pluginData.thickness || 4
-    readonly property color highlightColor: pluginData.color || Theme.primary
-    readonly property real offsetX: pluginData.offsetX || 0
-    readonly property real offsetY: pluginData.offsetY || 0
+    readonly property real highlightSize: pluginData[highlightStyle + "Size"] || 28
+    readonly property real highlightThickness: pluginData.ringThickness || 4
+    readonly property color highlightColor: pluginData[highlightStyle + "Color"] || Theme.primary
+    readonly property real offsetX: pluginData[highlightStyle + "OffsetX"] || 0
+    readonly property real offsetY: pluginData[highlightStyle + "OffsetY"] || 0
     readonly property real pollRate: pluginData.pollRate || 60
-    readonly property bool rainbow: pluginData.rainbow || false
-    readonly property real rainbowSpeed: pluginData.rainbowSpeed || 5
+    readonly property bool rainbow: pluginData[highlightStyle + "Rainbow"] || false
+    readonly property real rainbowSpeed: pluginData[highlightStyle + "RainbowSpeed"] || 5
 
     // Rainbow flash: rotate the chosen color's hue while active, keeping its
     // saturation and lightness so the cycle matches the theme's character.
