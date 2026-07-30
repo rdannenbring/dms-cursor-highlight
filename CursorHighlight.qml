@@ -19,6 +19,8 @@ PluginComponent {
     readonly property real highlightSize: pluginData.size || 28
     readonly property real highlightThickness: pluginData.thickness || 4
     readonly property color highlightColor: pluginData.color || Theme.primary
+    readonly property real offsetX: pluginData.offsetX || 0
+    readonly property real offsetY: pluginData.offsetY || 0
     readonly property real pollRate: pluginData.pollRate || 60
 
     // Process only picks up a new command on restart
@@ -101,6 +103,9 @@ PluginComponent {
             readonly property real localX: root.cursorX - modelData.x
             readonly property real localY: root.cursorY - modelData.y
             readonly property bool cursorOnScreen: localX >= 0 && localY >= 0 && localX < modelData.width && localY < modelData.height
+            // Highlight anchor point, user offset applied
+            readonly property real drawX: localX + root.offsetX
+            readonly property real drawY: localY + root.offsetY
 
             screen: modelData
             visible: root.active && cursorOnScreen
@@ -121,8 +126,8 @@ PluginComponent {
 
             Rectangle {
                 visible: root.highlightStyle === "ring"
-                x: win.localX - width / 2
-                y: win.localY - height / 2
+                x: win.drawX - width / 2
+                y: win.drawY - height / 2
                 width: root.highlightSize * 2
                 height: root.highlightSize * 2
                 radius: root.highlightSize
@@ -133,8 +138,8 @@ PluginComponent {
 
             Rectangle {
                 visible: root.highlightStyle === "dot"
-                x: win.localX - width / 2
-                y: win.localY - height / 2
+                x: win.drawX - width / 2
+                y: win.drawY - height / 2
                 width: root.highlightSize * 2
                 height: root.highlightSize * 2
                 radius: root.highlightSize
@@ -145,8 +150,8 @@ PluginComponent {
             // clockwise to match the default cursor's slightly-off-vertical lean
             Canvas {
                 visible: root.highlightStyle === "arrow"
-                x: win.localX - width * 0.15
-                y: win.localY
+                x: win.drawX - width * 0.15
+                y: win.drawY
                 width: root.highlightSize * 2
                 height: root.highlightSize * 2
 

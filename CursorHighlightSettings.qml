@@ -198,6 +198,28 @@ PluginSettings {
                 rightIcon: "line_weight"
             }
 
+            SliderSetting {
+                settingKey: "offsetX"
+                label: "Offset X"
+                description: "Horizontal shift from the cursor position"
+                defaultValue: 0
+                minimum: -100
+                maximum: 100
+                unit: "px"
+                rightIcon: "swap_horiz"
+            }
+
+            SliderSetting {
+                settingKey: "offsetY"
+                label: "Offset Y"
+                description: "Vertical shift from the cursor position"
+                defaultValue: 0
+                minimum: -100
+                maximum: 100
+                unit: "px"
+                rightIcon: "swap_vert"
+            }
+
             ColorSetting {
                 id: colorSetting
                 settingKey: "color"
