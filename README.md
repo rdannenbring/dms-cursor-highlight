@@ -5,7 +5,11 @@ cursor on an overlay layer. Useful for presentations and screen sharing - the hi
 is a normal Wayland surface, so it is captured by screencopy even when the hardware
 cursor is not.
 
-Hyprland only. Requires `python3` (see [Why the python3 helper?](#why-the-python3-helper) below).
+## Requirements
+
+- [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) (DMS)
+- Hyprland (cursor position is read from Hyprland's IPC socket)
+- `python3` (see [Why the python3 helper?](#why-the-python3-helper))
 
 ## Install
 
@@ -17,18 +21,65 @@ Then: DMS Settings → Plugins → Scan for Plugins → enable Cursor Highlight.
 
 ## Usage
 
+### Terminal / IPC
+
 ```bash
-dms ipc call cursorHighlight toggle   # also: enable / disable
+dms ipc call cursorHighlight toggle
+dms ipc call cursorHighlight enable
+dms ipc call cursorHighlight disable
 ```
 
-Example Hyprland bind:
+The settings panel also has a Show Ring toggle that does the same thing.
+
+### Keybinds
+
+Example binds - adjust keys to taste (also shown with copy buttons in the settings
+panel). For DMS's Hyprland Lua config (e.g. `dms/binds-user.lua`):
+
+```lua
+-- Show while holding a key (e.g. Control)
+-- non_consuming keeps Ctrl working as a normal modifier
+hl.bind("Control_L", hl.dsp.exec_cmd("dms ipc call cursorHighlight enable"), { non_consuming = true, description = "Show cursor highlight (hold)" })
+
+-- Hide when releasing the key.
+-- Note: releasing a modifier key requires the modifier in the mods field,
+-- because the modifier is still active in the event's modifier mask.
+hl.bind("CTRL + Control_L", hl.dsp.exec_cmd("dms ipc call cursorHighlight disable"), { release = true, non_consuming = true })
+
+-- Toggle with a keybind (e.g. Super+Shift+M)
+hl.bind("SUPER + SHIFT + M", hl.dsp.exec_cmd("dms ipc call cursorHighlight toggle"), { description = "Toggle cursor highlight" })
+```
+
+Classic `hyprland.conf` equivalent:
 
 ```ini
-bindd = SUPER, F10, Toggle cursor highlight, exec, dms ipc call cursorHighlight toggle
+bind = , Control_L, exec, dms ipc call cursorHighlight enable
+bindr = CTRL, Control_L, exec, dms ipc call cursorHighlight disable
+bindd = SUPER SHIFT, M, Toggle cursor highlight, exec, dms ipc call cursorHighlight toggle
 ```
 
-Highlight style (ring, dot, or arrow), size, color, and polling rate are configurable
-in DMS Settings → Plugins → Cursor Highlight.
+## Settings
+
+DMS Settings → Plugins → Cursor Highlight:
+
+| Setting | Default | Range | Notes |
+|---|---|---|---|
+| Show Ring | off | - | Live toggle, same as the IPC command |
+| Polling Rate | 60 Hz | 10-240 | How often the cursor position is sampled; higher is smoother, slightly more CPU |
+| Style | Ring | Ring / Dot / Arrow | Shape drawn at the cursor |
+| Size | 28 px | 8-100 | Radius (ring/dot) or length (arrow) |
+| Ring Thickness | 4 px | 1-20 | Ring style only |
+| Offset X / Y | 0 px | -100-100 | Shift the highlight from the cursor position |
+| Color | theme primary | - | Color picker; reset button restores theme-following default |
+
+Notes:
+
+- The highlight is click-through (empty input region) and never takes keyboard focus.
+- Multi-monitor is handled: the highlight follows the cursor onto whichever screen it is on.
+- The arrow's tip sits exactly on the cursor position (plus any offset), angled to
+  match the default cursor.
+- "Reset Color to Theme Default" deletes the stored color rather than saving the
+  current theme color, so the highlight keeps following future theme changes.
 
 ## Development
 
@@ -62,7 +113,9 @@ error as a warning in C++, before QML code gets a chance to filter it. Polling a
 from QML therefore floods the Quickshell log with ~60 meaningless warnings per second,
 and nothing in QML can suppress them.
 
-The helper sidesteps Qt entirely: at the configured polling rate (60Hz by default) it opens the socket, sends `cursorpos`,
-prints the `x, y` reply to stdout, and closes. The QML side just parses stdout. If
-Quickshell ever demotes the peer-close warning, the helper can be replaced with a
-pure-QML `Socket` + `Timer`.
+The helper sidesteps Qt entirely: at the configured polling rate (60Hz by default) it
+opens the socket, sends `cursorpos`, prints the `x, y` reply to stdout, and closes.
+The QML side just parses stdout. If Quickshell ever demotes the peer-close warning,
+the helper can be replaced with a pure-QML `Socket` + `Timer`. The helper is spawned
+once per enable and exits on disable; if it dies (e.g. Hyprland gone), the plugin
+disables itself.

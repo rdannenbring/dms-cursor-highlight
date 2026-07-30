@@ -275,7 +275,7 @@ PluginSettings {
             }
 
             StyledText {
-                text: "Example Hyprland binds - adjust keys to taste."
+                text: "Example binds for the DMS Hyprland Lua config (e.g. dms/binds-user.lua) - adjust keys to taste."
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.surfaceVariantText
                 wrapMode: Text.WordWrap
@@ -292,7 +292,19 @@ PluginSettings {
             }
 
             BindCode {
-                code: "bind = , Control_L, exec, dms ipc call cursorHighlight enable\nbindr = , Control_L, exec, dms ipc call cursorHighlight disable"
+                code: "hl.bind(\"Control_L\", hl.dsp.exec_cmd(\"dms ipc call cursorHighlight enable\"), { non_consuming = true, description = \"Show cursor highlight (hold)\" })"
+            }
+
+            StyledText {
+                text: "Hide when releasing a key (e.g. Control). Note: releasing a modifier key requires the modifier in the mods field:"
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.surfaceVariantText
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+
+            BindCode {
+                code: "hl.bind(\"CTRL + Control_L\", hl.dsp.exec_cmd(\"dms ipc call cursorHighlight disable\"), { release = true, non_consuming = true })"
             }
 
             StyledText {
@@ -304,7 +316,7 @@ PluginSettings {
             }
 
             BindCode {
-                code: "bindd = SUPER SHIFT, M, Toggle cursor ring, exec, dms ipc call cursorHighlight toggle"
+                code: "hl.bind(\"SUPER + SHIFT + M\", hl.dsp.exec_cmd(\"dms ipc call cursorHighlight toggle\"), { description = \"Toggle cursor highlight\" })"
             }
         }
     }
