@@ -1,11 +1,11 @@
 # DMS Plugin: Cursor Highlight
 
-![Settings panel with the arrow highlight](assets/screenshot.png)
-
 DMS daemon plugin that draws a click-through highlight (ring, dot, or arrow) at the
 cursor on an overlay layer. Useful for presentations and screen sharing - the highlight
 is a normal Wayland surface, so it is captured by screencopy even when the hardware
 cursor is not.
+
+![Settings panel with the arrow highlight](assets/screenshot.png)
 
 ## Requirements
 
@@ -69,6 +69,8 @@ bindd = SUPER SHIFT, M, Toggle cursor highlight, exec, dms ipc call cursorHighli
 ```
 
 ## Settings
+
+![Settings panel with the arrow highlight](assets/screenshot_full.png)
 
 DMS Settings → Plugins → Cursor Highlight:
 
