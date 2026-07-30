@@ -1,14 +1,16 @@
 {
     "id": "cursorHighlight",
     "name": "Cursor Highlight",
-    "description": "Click-through overlay ring around the cursor for presentations and screen sharing",
-    "version": "1.0.0",
+    "description": "Overlay under the cursor for presentations and screen sharing",
+    "version": "1.1.0",
     "license": "MIT",
     "author": "Rey Arlena",
     "icon": "my_location",
     "type": "daemon",
     "component": "./CursorHighlight.qml",
+    "settings": "./CursorHighlightSettings.qml",
     "permissions": [
-        "settings_read"
+        "settings_read",
+        "settings_write"
     ]
 }

@@ -1,10 +1,10 @@
 # Cursor Highlight
 
 DMS daemon plugin that draws a click-through ring around the cursor on an overlay layer.
-Useful for presentations and screen sharing — the ring is a normal Wayland surface, so it
+Useful for presentations and screen sharing - the ring is a normal Wayland surface, so it
 is captured by screencopy even when the hardware cursor is not.
 
-Hyprland only (polls `cursorpos` over the Hyprland IPC socket).
+Hyprland only. Requires `python3` (see [Why the python3 helper?](#why-the-python3-helper) below).
 
 ## Install
 
@@ -26,12 +26,23 @@ Example Hyprland bind:
 bindd = SUPER, F10, Toggle cursor highlight, exec, dms ipc call cursorHighlight toggle
 ```
 
-## Configuration
+Ring radius, thickness, and color are configurable in DMS Settings → Plugins → Cursor Highlight.
 
-Optional keys in the plugin's settings (DMS plugin data), all with defaults:
+## Why the python3 helper?
 
-| Key | Default | |
-|---|---|---|
-| `ringRadius` | `28` | ring radius in px |
-| `ringThickness` | `4` | border width in px |
-| `ringColor` | theme primary | any QML color string |
+The plugin polls the cursor position from Hyprland's IPC socket - the same request
+`hyprctl cursorpos` makes. A small long-lived python3 process does this instead of a
+QML `Socket`, for one reason: log noise.
+
+Hyprland's IPC serves one request per connection and then closes it - the close is the
+normal end-of-response marker. Qt, however, reports any connection ending the client
+didn't initiate through its error signal (`PeerClosedError`), because it can't know
+whether a server hang-up is expected for the protocol. Quickshell then logs every such
+error as a warning in C++, before QML code gets a chance to filter it. Polling at 60Hz
+from QML therefore floods the Quickshell log with ~60 meaningless warnings per second,
+and nothing in QML can suppress them.
+
+The helper sidesteps Qt entirely: every 16ms it opens the socket, sends `cursorpos`,
+prints the `x, y` reply to stdout, and closes. The QML side just parses stdout. If
+Quickshell ever demotes the peer-close warning, the helper can be replaced with a
+pure-QML `Socket` + `Timer`.

@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.Common
@@ -39,16 +38,24 @@ PluginComponent {
         }
     }
 
-    // Hyprland answers one request per connection, then closes it;
-    // the timer reconnects every tick.
-    Socket {
-        id: hyprSocket
+    // Cursor position poller.
+    //
+    // Hyprland's IPC socket serves exactly one request per connection and then
+    // closes it. Polling it with a QML Socket therefore ends every poll with a
+    // peer-close, which Quickshell logs as a PeerClosedError warning from C++
+    // (~60/sec, not suppressible from QML). Spawning `hyprctl` per poll avoids
+    // that but forks a process 60x/sec.
+    //
+    // Instead, one long-lived python3 helper does what hyprctl does internally:
+    // every 16ms it opens the socket, sends "cursorpos", prints the "x, y"
+    // reply to stdout, and closes. The SplitParser below feeds each line back
+    // into cursorX/cursorY. If Quickshell ever demotes the peer-close warning,
+    // this can go back to a pure-QML Socket + Timer.
+    Process {
+        running: root.active
+        command: ["python3", "-c", "import os,socket,time\n" + "p=os.path.join(os.environ['XDG_RUNTIME_DIR'],'hypr',os.environ['HYPRLAND_INSTANCE_SIGNATURE'],'.socket.sock')\n" + "while True:\n" + " s=socket.socket(socket.AF_UNIX)\n" + " s.connect(p)\n" + " s.sendall(b'cursorpos')\n" + " d=s.recv(64)\n" + " s.close()\n" + " print(d.decode(),flush=True)\n" + " time.sleep(0.016)"]
 
-        path: Hyprland.requestSocketPath
-
-        parser: SplitParser {
-            // Replies have no trailing newline; empty marker emits raw chunks
-            splitMarker: ""
+        stdout: SplitParser {
             onRead: data => {
                 const parts = data.split(",");
                 if (parts.length === 2) {
@@ -58,28 +65,12 @@ PluginComponent {
             }
         }
 
-        onConnectedChanged: {
-            if (connected) {
-                write("cursorpos");
-                flush();
-            }
-        }
-
-        onError: error => {
-            // 1 = QLocalSocket::PeerClosedError, expected after every reply
-            if (error !== 1 && root.active) {
+        onExited: {
+            if (root.active) {
                 root.active = false;
-                console.warn("CursorHighlight: Hyprland IPC error", error, "- disabling");
+                console.warn("CursorHighlight: poller died, disabling");
             }
         }
-    }
-
-    Timer {
-        running: root.active
-        interval: 16
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: hyprSocket.connected = true
     }
 
     Variants {
