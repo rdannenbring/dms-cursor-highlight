@@ -12,6 +12,14 @@ PluginSettings {
     readonly property var daemonInstance: pluginService && pluginService.pluginDaemonInstances ? pluginService.pluginDaemonInstances[pluginId] : null
     readonly property bool ringActive: daemonInstance ? daemonInstance.active : false
 
+    // SelectionSetting loads its stored value on completion, which runs before
+    // DMS injects pluginService - and the built-in reload loop only reaches
+    // top-level children, not settings nested in section cards. Reload manually.
+    onPluginServiceChanged: {
+        if (pluginService)
+            styleSetting.loadValue();
+    }
+
     // Read-only code box with a copy button
     component BindCode: StyledRect {
         id: codeBox
