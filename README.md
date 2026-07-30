@@ -29,7 +29,7 @@ dms ipc call cursorHighlight enable
 dms ipc call cursorHighlight disable
 ```
 
-The settings panel also has a Show Ring toggle that does the same thing.
+The settings panel also has a Show Highlight toggle that does the same thing.
 
 ### Keybinds
 
@@ -64,7 +64,7 @@ DMS Settings → Plugins → Cursor Highlight:
 
 | Setting | Default | Range | Notes |
 |---|---|---|---|
-| Show Ring | off | - | Live toggle, same as the IPC command |
+| Show Highlight | off | - | Live toggle, same as the IPC command |
 | Polling Rate | 60 Hz | 10-240 | How often the cursor position is sampled; higher is smoother, slightly more CPU |
 | Style | Ring | Ring / Dot / Arrow | Shape drawn at the cursor |
 | Size | 28 px | 8-100 | Radius (ring/dot) or length (arrow) |

@@ -10,7 +10,7 @@ PluginSettings {
     pluginId: "cursorHighlight"
 
     readonly property var daemonInstance: pluginService && pluginService.pluginDaemonInstances ? pluginService.pluginDaemonInstances[pluginId] : null
-    readonly property bool ringActive: daemonInstance ? daemonInstance.active : false
+    readonly property bool highlightActive: daemonInstance ? daemonInstance.active : false
 
     // SelectionSetting loads its stored value on completion, which runs before
     // DMS injects pluginService - and the built-in reload loop only reaches
@@ -77,7 +77,7 @@ PluginSettings {
 
     StyledText {
         width: parent.width
-        text: "Click-through ring around the cursor for presentations and screen sharing"
+        text: "Click-through highlight at the cursor for presentations and screen sharing"
         font.pixelSize: Theme.fontSizeSmall
         color: Theme.surfaceVariantText
         wrapMode: Text.WordWrap
@@ -107,12 +107,12 @@ PluginSettings {
                 spacing: Theme.spacingM
 
                 Column {
-                    width: parent.width - ringToggle.width - Theme.spacingM
+                    width: parent.width - highlightToggle.width - Theme.spacingM
                     spacing: Theme.spacingXS
                     anchors.verticalCenter: parent.verticalCenter
 
                     StyledText {
-                        text: "Show Ring"
+                        text: "Show Highlight"
                         font.pixelSize: Theme.fontSizeLarge
                         font.weight: Font.Medium
                         color: Theme.surfaceText
@@ -128,9 +128,9 @@ PluginSettings {
                 }
 
                 DankToggle {
-                    id: ringToggle
+                    id: highlightToggle
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: root.ringActive
+                    checked: root.highlightActive
                     onToggled: isChecked => {
                         if (root.daemonInstance)
                             root.daemonInstance.active = isChecked;
