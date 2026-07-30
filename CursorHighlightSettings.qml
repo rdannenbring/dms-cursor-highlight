@@ -228,6 +228,25 @@ PluginSettings {
                 rightIcon: "swap_vert"
             }
 
+            ToggleSetting {
+                id: rainbowSetting
+                settingKey: "rainbow"
+                label: "Rainbow Mode"
+                description: "Cycle the hue of the selected colour while visible"
+                defaultValue: false
+            }
+
+            SliderSetting {
+                visible: rainbowSetting.value
+                settingKey: "rainbowSpeed"
+                label: "Flash Speed"
+                description: "1 is a slow ~10s cycle, 10 is ~1s"
+                defaultValue: 5
+                minimum: 1
+                maximum: 10
+                rightIcon: "speed"
+            }
+
             ColorSetting {
                 id: colorSetting
                 settingKey: "color"

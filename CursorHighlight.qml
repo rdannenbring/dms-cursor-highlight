@@ -16,6 +16,8 @@ PluginComponent {
         if (active) {
             cursorX = -1;
             cursorY = -1;
+            // Start the rainbow cycle from the chosen color's own hue
+            hue = Math.max(0, highlightColor.hslHue);
         }
     }
 
@@ -31,6 +33,23 @@ PluginComponent {
     readonly property real offsetX: pluginData.offsetX || 0
     readonly property real offsetY: pluginData.offsetY || 0
     readonly property real pollRate: pluginData.pollRate || 60
+    readonly property bool rainbow: pluginData.rainbow || false
+    readonly property real rainbowSpeed: pluginData.rainbowSpeed || 5
+
+    // Rainbow flash: rotate the chosen color's hue while active, keeping its
+    // saturation and lightness so the cycle matches the theme's character.
+    // Speed 1 = ~10s per full cycle, speed 10 = ~1s.
+    property real hue: 0
+    // Saturation floor so a near-grey color still visibly cycles
+    readonly property real rainbowSaturation: Math.max(highlightColor.hslSaturation, 0.5)
+    readonly property color effectiveColor: rainbow ? Qt.hsla(hue, rainbowSaturation, highlightColor.hslLightness, 1) : highlightColor
+
+    Timer {
+        running: root.active && root.rainbow
+        interval: 33
+        repeat: true
+        onTriggered: root.hue = (root.hue + root.rainbowSpeed * 0.0033) % 1
+    }
 
     // Process only picks up a new command on restart
     onPollRateChanged: {
@@ -141,7 +160,7 @@ PluginComponent {
                 height: root.highlightSize * 2
                 radius: root.highlightSize
                 color: "transparent"
-                border.color: root.highlightColor
+                border.color: root.effectiveColor
                 border.width: root.highlightThickness
             }
 
@@ -152,7 +171,7 @@ PluginComponent {
                 width: root.highlightSize * 2
                 height: root.highlightSize * 2
                 radius: root.highlightSize
-                color: root.highlightColor
+                color: root.effectiveColor
             }
 
             // Pointer-style arrowhead, tip at the cursor position, rotated
@@ -165,7 +184,7 @@ PluginComponent {
                 height: root.highlightSize * 2
 
                 // Canvas only repaints on resize by itself
-                property color paintColor: root.highlightColor
+                property color paintColor: root.effectiveColor
                 onPaintColorChanged: requestPaint()
                 onVisibleChanged: if (visible) requestPaint()
 

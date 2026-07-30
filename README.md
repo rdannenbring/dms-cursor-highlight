@@ -70,6 +70,8 @@ DMS Settings → Plugins → Cursor Highlight:
 | Size | 28 px | 8-100 | Radius (ring/dot) or length (arrow) |
 | Ring Thickness | 4 px | 1-20 | Ring style only |
 | Offset X / Y | 0 px | -100-100 | Shift the highlight from the cursor position |
+| Rainbow Mode | off | - | Cycle the hue of the selected colour while visible, keeping its saturation and lightness |
+| Flash Speed | 5 | 1-10 | Rainbow cycle speed; 1 is ~10s per cycle, 10 is ~1s (shown when Rainbow Mode is on) |
 | Color | theme primary | - | Color picker; reset button restores theme-following default |
 
 Notes:
