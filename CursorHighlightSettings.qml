@@ -1,5 +1,7 @@
 import QtQuick
+import Quickshell
 import qs.Common
+import qs.Services
 import qs.Widgets
 import qs.Modules.Plugins
 
@@ -9,6 +11,53 @@ PluginSettings {
 
     readonly property var daemonInstance: pluginService && pluginService.pluginDaemonInstances ? pluginService.pluginDaemonInstances[pluginId] : null
     readonly property bool ringActive: daemonInstance ? daemonInstance.active : false
+
+    // Read-only code box with a copy button
+    component BindCode: StyledRect {
+        id: codeBox
+
+        property string code
+
+        width: parent.width
+        height: codeEdit.implicitHeight + Theme.spacingM * 2
+        radius: Theme.cornerRadius
+        color: Theme.surfaceContainerHigh
+        border.width: 1
+        border.color: Theme.withAlpha(Theme.outline, 0.3)
+
+        TextEdit {
+            id: codeEdit
+            anchors.left: parent.left
+            anchors.right: copyButton.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: Theme.spacingM
+            anchors.rightMargin: Theme.spacingS
+            text: codeBox.code
+            readOnly: true
+            selectByMouse: true
+            wrapMode: TextEdit.Wrap
+            font.family: Theme.monoFontFamily
+            font.pixelSize: Theme.fontSizeSmall
+            color: Theme.surfaceText
+            selectionColor: Theme.primary
+            selectedTextColor: Theme.surface
+        }
+
+        DankActionButton {
+            id: copyButton
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: Theme.spacingXS
+            iconName: "content_copy"
+            iconSize: Theme.iconSize - 6
+            buttonSize: 28
+            tooltipText: "Copy to clipboard"
+            onClicked: {
+                Quickshell.execDetached(["sh", "-c", "printf %s \"$1\" | dms cl copy", "_", codeBox.code]);
+                ToastService.showInfo("Copied to clipboard");
+            }
+        }
+    }
 
     StyledText {
         text: "Cursor Highlight"
@@ -170,14 +219,8 @@ PluginSettings {
                 width: parent.width
             }
 
-            StyledText {
-                text: "bind  = , Control_L, exec, dms ipc call cursorHighlight enable\nbindr = , Control_L, exec, dms ipc call cursorHighlight disable"
-                isMonospace: true
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.surfaceText
-                wrapMode: Text.WordWrap
-                width: parent.width
-                lineHeight: 1.4
+            BindCode {
+                code: "bind = , Control_L, exec, dms ipc call cursorHighlight enable\nbindr = , Control_L, exec, dms ipc call cursorHighlight disable"
             }
 
             StyledText {
@@ -188,14 +231,8 @@ PluginSettings {
                 width: parent.width
             }
 
-            StyledText {
-                text: "bindd = SUPER SHIFT, M, Toggle cursor ring, exec, dms ipc call cursorHighlight toggle"
-                isMonospace: true
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.surfaceText
-                wrapMode: Text.WordWrap
-                width: parent.width
-                lineHeight: 1.4
+            BindCode {
+                code: "bindd = SUPER SHIFT, M, Toggle cursor ring, exec, dms ipc call cursorHighlight toggle"
             }
         }
     }
