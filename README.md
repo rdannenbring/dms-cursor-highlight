@@ -16,7 +16,13 @@ A startup check verifies both requirements when the plugin is enabled - if Hyprl
 ## Install
 
 ```bash
-ln -s ~/Projects/cursor-highlight ~/.config/DankMaterialShell/plugins/cursor-highlight
+git clone https://github.com/ReyArlena/dms-cursor-highlight ~/.config/DankMaterialShell/plugins/cursor-highlight
+```
+
+Or clone anywhere and symlink it into the plugins directory:
+
+```bash
+ln -s /path/to/dms-cursor-highlight ~/.config/DankMaterialShell/plugins/cursor-highlight
 ```
 
 Then: DMS Settings → Plugins → Scan for Plugins → enable Cursor Highlight.
