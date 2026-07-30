@@ -15,9 +15,10 @@ PluginComponent {
         active = !active;
     }
 
-    readonly property real ringRadius: pluginData.ringRadius || 28
-    readonly property real ringThickness: pluginData.ringThickness || 4
-    readonly property color ringColor: pluginData.ringColor || Theme.primary
+    readonly property string highlightStyle: pluginData.style || "ring"
+    readonly property real highlightSize: pluginData.size || 28
+    readonly property real highlightThickness: pluginData.thickness || 4
+    readonly property color highlightColor: pluginData.color || Theme.primary
     readonly property real pollRate: pluginData.pollRate || 60
 
     // Process only picks up a new command on restart
@@ -119,14 +120,59 @@ PluginComponent {
             }
 
             Rectangle {
+                visible: root.highlightStyle === "ring"
                 x: win.localX - width / 2
                 y: win.localY - height / 2
-                width: root.ringRadius * 2
-                height: root.ringRadius * 2
-                radius: root.ringRadius
+                width: root.highlightSize * 2
+                height: root.highlightSize * 2
+                radius: root.highlightSize
                 color: "transparent"
-                border.color: root.ringColor
-                border.width: root.ringThickness
+                border.color: root.highlightColor
+                border.width: root.highlightThickness
+            }
+
+            Rectangle {
+                visible: root.highlightStyle === "dot"
+                x: win.localX - width / 2
+                y: win.localY - height / 2
+                width: root.highlightSize * 2
+                height: root.highlightSize * 2
+                radius: root.highlightSize
+                color: root.highlightColor
+            }
+
+            // Pointer-style arrowhead, tip at the cursor position, rotated
+            // clockwise to match the default cursor's slightly-off-vertical lean
+            Canvas {
+                visible: root.highlightStyle === "arrow"
+                x: win.localX - width * 0.15
+                y: win.localY
+                width: root.highlightSize * 2
+                height: root.highlightSize * 2
+
+                // Canvas only repaints on resize by itself
+                property color paintColor: root.highlightColor
+                onPaintColorChanged: requestPaint()
+                onVisibleChanged: if (visible) requestPaint()
+
+                onPaint: {
+                    const ctx = getContext("2d");
+                    ctx.save();
+                    ctx.clearRect(0, 0, width, height);
+                    const s = width * 0.85;
+                    ctx.fillStyle = paintColor;
+                    // Tip sits inset from the left edge so the rotated body stays in bounds
+                    ctx.translate(width * 0.15, 0);
+                    ctx.rotate(23 * Math.PI / 180);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(s * 0.9, s * 0.35);
+                    ctx.lineTo(s * 0.55, s * 0.55);
+                    ctx.lineTo(s * 0.35, s * 0.9);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
             }
         }
     }

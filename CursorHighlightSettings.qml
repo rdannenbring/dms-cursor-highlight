@@ -162,10 +162,23 @@ PluginSettings {
                 color: Theme.surfaceText
             }
 
+            SelectionSetting {
+                id: styleSetting
+                settingKey: "style"
+                label: "Style"
+                description: "Shape drawn at the cursor position"
+                defaultValue: "ring"
+                options: [
+                    { label: "Ring", value: "ring" },
+                    { label: "Dot", value: "dot" },
+                    { label: "Arrow", value: "arrow" }
+                ]
+            }
+
             SliderSetting {
-                settingKey: "ringRadius"
-                label: "Ring Radius"
-                description: "Radius of the highlight ring"
+                settingKey: "size"
+                label: "Size"
+                description: styleSetting.value === "arrow" ? "Length of the arrow" : "Radius of the highlight"
                 defaultValue: 28
                 minimum: 8
                 maximum: 100
@@ -174,7 +187,8 @@ PluginSettings {
             }
 
             SliderSetting {
-                settingKey: "ringThickness"
+                visible: styleSetting.value === "ring"
+                settingKey: "thickness"
                 label: "Ring Thickness"
                 description: "Border width of the ring"
                 defaultValue: 4
@@ -186,8 +200,8 @@ PluginSettings {
 
             ColorSetting {
                 id: colorSetting
-                settingKey: "ringColor"
-                label: "Ring Color"
+                settingKey: "color"
+                label: "Color"
                 description: "Defaults to the theme primary color"
                 defaultValue: Theme.primary
             }
@@ -197,10 +211,10 @@ PluginSettings {
                 iconName: "format_color_reset"
                 onClicked: {
                     // Remove the stored value entirely (instead of saving the current
-                    // theme color as a fixed hex) so the ring keeps following the theme
+                    // theme color as a fixed hex) so the highlight keeps following the theme
                     colorSetting.isInitialized = false;
                     colorSetting.value = colorSetting.defaultValue;
-                    root.saveValue("ringColor", undefined);
+                    root.saveValue("color", undefined);
                     colorSetting.isInitialized = true;
                 }
             }

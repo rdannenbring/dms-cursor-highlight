@@ -1,8 +1,9 @@
 # Cursor Highlight
 
-DMS daemon plugin that draws a click-through ring around the cursor on an overlay layer.
-Useful for presentations and screen sharing - the ring is a normal Wayland surface, so it
-is captured by screencopy even when the hardware cursor is not.
+DMS daemon plugin that draws a click-through highlight (ring, dot, or arrow) at the
+cursor on an overlay layer. Useful for presentations and screen sharing - the highlight
+is a normal Wayland surface, so it is captured by screencopy even when the hardware
+cursor is not.
 
 Hyprland only. Requires `python3` (see [Why the python3 helper?](#why-the-python3-helper) below).
 
@@ -26,7 +27,8 @@ Example Hyprland bind:
 bindd = SUPER, F10, Toggle cursor highlight, exec, dms ipc call cursorHighlight toggle
 ```
 
-Ring radius, thickness, and color are configurable in DMS Settings → Plugins → Cursor Highlight.
+Highlight style (ring, dot, or arrow), size, color, and polling rate are configurable
+in DMS Settings → Plugins → Cursor Highlight.
 
 ## Development
 
