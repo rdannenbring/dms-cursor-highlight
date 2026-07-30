@@ -10,9 +10,23 @@ PluginComponent {
 
     property bool active: false
 
+    // Used by PluginService.togglePlugin()
+    function toggle() {
+        active = !active;
+    }
+
     readonly property real ringRadius: pluginData.ringRadius || 28
     readonly property real ringThickness: pluginData.ringThickness || 4
     readonly property color ringColor: pluginData.ringColor || Theme.primary
+    readonly property real pollRate: pluginData.pollRate || 60
+
+    // Process only picks up a new command on restart
+    onPollRateChanged: {
+        if (poller.running) {
+            poller.running = false;
+            poller.running = Qt.binding(() => root.active);
+        }
+    }
 
     // Global layout coordinates, -1 until first poll
     property real cursorX: -1
@@ -52,8 +66,10 @@ PluginComponent {
     // into cursorX/cursorY. If Quickshell ever demotes the peer-close warning,
     // this can go back to a pure-QML Socket + Timer.
     Process {
+        id: poller
+
         running: root.active
-        command: ["python3", "-c", "import os,socket,time\n" + "p=os.path.join(os.environ['XDG_RUNTIME_DIR'],'hypr',os.environ['HYPRLAND_INSTANCE_SIGNATURE'],'.socket.sock')\n" + "while True:\n" + " s=socket.socket(socket.AF_UNIX)\n" + " s.connect(p)\n" + " s.sendall(b'cursorpos')\n" + " d=s.recv(64)\n" + " s.close()\n" + " print(d.decode(),flush=True)\n" + " time.sleep(0.016)"]
+        command: ["python3", "-c", "import os,socket,time\n" + "p=os.path.join(os.environ['XDG_RUNTIME_DIR'],'hypr',os.environ['HYPRLAND_INSTANCE_SIGNATURE'],'.socket.sock')\n" + "while True:\n" + " s=socket.socket(socket.AF_UNIX)\n" + " s.connect(p)\n" + " s.sendall(b'cursorpos')\n" + " d=s.recv(64)\n" + " s.close()\n" + " print(d.decode(),flush=True)\n" + " time.sleep(" + (1 / root.pollRate).toFixed(4) + ")"]
 
         stdout: SplitParser {
             onRead: data => {

@@ -28,6 +28,24 @@ bindd = SUPER, F10, Toggle cursor highlight, exec, dms ipc call cursorHighlight 
 
 Ring radius, thickness, and color are configurable in DMS Settings → Plugins → Cursor Highlight.
 
+## Development
+
+After editing plugin files, restart DMS to pick up the changes:
+
+```bash
+dms restart
+```
+
+Why: the QML engine caches compiled components by file URL for the lifetime of the
+process, and DMS's plugin reload only cache-busts the daemon component
+(`CursorHighlight.qml`) - the settings panel (`CursorHighlightSettings.qml`) is loaded
+by plain URL and stays cached until the shell restarts. The cache also stores failures:
+if the settings file is missing or broken on first open, the panel silently stays empty
+on every later attempt until a restart, with nothing in the log.
+
+`dms ipc call plugins reload cursorHighlight` is enough if only `CursorHighlight.qml`
+changed; when in doubt, `dms restart`.
+
 ## Why the python3 helper?
 
 The plugin polls the cursor position from Hyprland's IPC socket - the same request
@@ -42,7 +60,7 @@ error as a warning in C++, before QML code gets a chance to filter it. Polling a
 from QML therefore floods the Quickshell log with ~60 meaningless warnings per second,
 and nothing in QML can suppress them.
 
-The helper sidesteps Qt entirely: every 16ms it opens the socket, sends `cursorpos`,
+The helper sidesteps Qt entirely: at the configured polling rate (60Hz by default) it opens the socket, sends `cursorpos`,
 prints the `x, y` reply to stdout, and closes. The QML side just parses stdout. If
 Quickshell ever demotes the peer-close warning, the helper can be replaced with a
 pure-QML `Socket` + `Timer`.
