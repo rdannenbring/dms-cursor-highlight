@@ -1,4 +1,6 @@
-# Cursor Highlight
+# DMS Plugin: Cursor Highlight
+
+![Settings panel with the arrow highlight](assets/screenshot.png)
 
 DMS daemon plugin that draws a click-through highlight (ring, dot, or arrow) at the
 cursor on an overlay layer. Useful for presentations and screen sharing - the highlight
