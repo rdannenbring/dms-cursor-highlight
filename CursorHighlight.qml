@@ -10,6 +10,15 @@ PluginComponent {
 
     property bool active: false
 
+    // Forget the stale position from last time, so the highlight stays hidden
+    // until the first fresh poll instead of flashing at the old location
+    onActiveChanged: {
+        if (active) {
+            cursorX = -1;
+            cursorY = -1;
+        }
+    }
+
     // Used by PluginService.togglePlugin()
     function toggle() {
         active = !active;
