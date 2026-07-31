@@ -17,6 +17,19 @@ A startup check verifies both requirements when the plugin is enabled - if Hyprl
 
 ## Install
 
+### From the DMS plugin registry (recommended)
+
+Install straight from within DMS - no manual file management, and updates are one click/command:
+
+- **In-app**: DMS Settings → Plugins → Browse, find *Cursor Highlight*, and install.
+- **CLI**: `dms plugins install cursorHighlight`
+
+This clones the plugin into `~/.config/DankMaterialShell/plugins/` and wires it up automatically. Update later with `dms plugins update cursorHighlight`; remove with `dms plugins uninstall cursorHighlight`.
+
+### Manual (git clone)
+
+Clone directly into the plugins directory - the repo root is the plugin (manifest at the top), so no symlink or subfolder juggling:
+
 ```bash
 git clone https://github.com/ReyArlena/dms-cursor-highlight ~/.config/DankMaterialShell/plugins/cursor-highlight
 ```
@@ -27,7 +40,11 @@ Or clone anywhere and symlink it into the plugins directory:
 ln -s /path/to/dms-cursor-highlight ~/.config/DankMaterialShell/plugins/cursor-highlight
 ```
 
-Then: DMS Settings → Plugins → Scan for Plugins → enable Cursor Highlight.
+Update later with `git -C ~/.config/DankMaterialShell/plugins/cursor-highlight pull`.
+
+### Enable
+
+Either way, finish with: DMS Settings → Plugins → Scan for Plugins → enable Cursor Highlight.
 
 ## Usage
 
