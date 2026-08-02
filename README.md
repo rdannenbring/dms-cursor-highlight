@@ -50,6 +50,8 @@ Either way, finish with: DMS Settings → Plugins → Scan for Plugins → enabl
 
 ### Bar widget
 
+![Bar widget with the right-click quick settings menu open](assets/screenshot_widget.png)
+
 Add it in DMS Settings → Appearance → DankBar Layout → *Cursor Highlight*.
 
 Left click the pill to turn highlighting on or off. Its icon is the style you picked -
