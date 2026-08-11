@@ -107,9 +107,11 @@ PluginComponent {
                 ctx.fill();
             } else if (shape === "arrow") {
                 // Same path and 23 degree lean as the overlay's arrowhead,
-                // scaled to the icon box and centred on its rotated bounds
+                // scaled to the icon box and centred on its rotated bounds,
+                // then nudged 2px right: the shape's visual mass sits left of
+                // its bounds centre, so true centring reads as leaning left
                 const a = s * 0.95;
-                ctx.translate(s / 2 - a * 0.331, s / 2 - a * 0.483);
+                ctx.translate(s / 2 - a * 0.331 + 2, s / 2 - a * 0.483);
                 ctx.rotate(23 * Math.PI / 180);
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
